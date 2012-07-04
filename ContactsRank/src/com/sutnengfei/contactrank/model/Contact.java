@@ -4,11 +4,13 @@ public class Contact
 {
 	private int cid;
 	private String name;
+	private String phoneNumber;
 	
-	public Contact(int cid,String name)
+	public Contact(int cid,String name,String phoneNumber)
 	{
 		this.cid = cid;
 		this.name = name;
+		this.phoneNumber = phoneNumber;
 	}
 	
 	public int get_cid()
@@ -20,8 +22,13 @@ public class Contact
 		return this.name;
 	}
 	
+	public String get_number()
+	{
+		return this.phoneNumber;
+	}
+	
 	public String toString()
 	{
-		return this.name+"__cid:"+String.valueOf(this.cid);
+		return this.name+"__cid:"+String.valueOf(this.cid)+"__number:"+this.phoneNumber;
 	}
 }

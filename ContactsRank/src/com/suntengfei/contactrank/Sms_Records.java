@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.suntengfei.contactrank.dao.TargetDAO;
+import com.sutnengfei.contactrank.model.Contact;
 import com.sutnengfei.contactrank.model.Sms_Record;
 
 import android.content.ContentResolver;
@@ -20,6 +21,8 @@ public class Sms_Records
 	private Date date;
 	private TargetDAO td;
 	private Context mContext;
+	private Contacts cts;
+	private ArrayList<Contact> act= null;
 	private class data
 	{
 		String name;
@@ -43,6 +46,7 @@ public class Sms_Records
 		this.smsrecords = new ArrayList<Sms_Record>();
 		this.mContext = mContext;
 		this.td = new TargetDAO(mContext);
+		this.cts = new Contacts(mContext);
 	}
 	
 	public ArrayList<Sms_Record> refresh_Sms_Records()
@@ -127,7 +131,17 @@ public class Sms_Records
 	
 	public data check_If_Exist(Context mContext,String number)
 	{
-		String[] projection = { Phone.DISPLAY_NAME, Phone.CONTACT_ID };
+		if(act==null)
+			act = cts.getPhoneContacts();
+		
+		for(int i = 0;i<act.size();i++)
+		{
+			if(number.equals(act.get(i).get_number()))
+				return new data(act.get(i).get_name(),act.get(i).get_cid());
+		}
+		
+		return null;
+		/*String[] projection = { Phone.DISPLAY_NAME, Phone.CONTACT_ID };
 		Cursor cursor = mContext.getContentResolver().query(
 				Phone.CONTENT_URI,
                 projection,    // Which columns to return.
@@ -141,8 +155,10 @@ public class Sms_Records
 			if(cursor.getCount()==0)
 				return null;
 			cursor.moveToPosition(0);
-			return new data(cursor.getString(0),cursor.getInt(1));
-		}
+			data dt = new data(cursor.getString(0),cursor.getInt(1));
+			cursor.close();
+			return dt;
+		}*/
 	}
 	
 }

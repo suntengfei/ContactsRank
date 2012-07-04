@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.suntengfei.contactrank.dao.TargetDAO;
 import com.sutnengfei.contactrank.model.Call_Record;
+import com.sutnengfei.contactrank.model.Contact;
 
 public class Call_Records
 {
@@ -21,12 +22,15 @@ public class Call_Records
 	private TargetDAO td;	
 	Date date;
 	private Context mContext;
+	private Contacts contacts;
+	private ArrayList<Contact> act = null;
 	
 	public Call_Records(Context mContext)
 	{
 		this.mContext = mContext;
 		this.td = new TargetDAO(mContext);
 		crds = new ArrayList<Call_Record>();
+		contacts = new Contacts(mContext);
 	}
 	
 	/**
@@ -148,7 +152,19 @@ public class Call_Records
 	
 	public int getID(Context mContext,String name)
 	{
-		String[] projection = {Phone.CONTACT_ID };
+		if(act ==null)
+		{
+			act = contacts.getPhoneContacts();
+		}
+		
+		for(int i = 0;i<act.size();i++)
+		{
+			if(name.equals(act.get(i).get_name()))
+				return act.get(i).get_cid();
+		}
+		
+		return 0;
+		/*String[] projection = {Phone.CONTACT_ID };
 		Cursor cursor = mContext.getContentResolver().query(
 				Phone.CONTENT_URI,
                 projection,    // Which columns to return.
@@ -162,10 +178,11 @@ public class Call_Records
 			if(cursor.getCount()==0)
 				return 0;
 			cursor.moveToPosition(0);
-			return cursor.getInt(0);
-		}
-	}
-	
+			int m = cursor.getInt(0);
+			cursor.close();
+			return m;
+		}*/
+	}	
 /*	public Call_Record[] getCallRecords()
 	{
 		return callrecords;

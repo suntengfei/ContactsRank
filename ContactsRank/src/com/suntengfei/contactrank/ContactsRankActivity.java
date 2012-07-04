@@ -150,6 +150,25 @@ public class ContactsRankActivity extends Activity {
 		return 0;
 	}
 	
+	
+	//为用户一个月评分
+	//裁剪掉无更新的好友
+	public ArrayList<Rank> makeMRankNew(ArrayList<Contact> ctt,int target)
+	{
+		ArrayList<Rank> rank = makeMRank(ctt,target);
+		
+		for(int i = 0;i<rank.size();i++)
+		{
+			if(rank.get(i).get_mpoint()==0)
+			{
+				rank.remove(i);
+				i--;
+			}
+		}
+		return rank;
+	}
+	
+	
 	/**
 	 * 为用户一个月评分||为用户总评分
 	 * @param ctt
@@ -235,6 +254,15 @@ public class ContactsRankActivity extends Activity {
 			ar.get(i).set_mpoint(mr.get(i).get_mpoint());
 			Log.i("201271",ar.get(i).toString());
 		}
+		for(int i = 0;i<ar.size();i++)
+		{
+			if(ar.get(i).get_apoint()==0&&ar.get(i).get_mpoint()==0)
+			{
+				ar.remove(i);
+				i--;
+			}
+		}
+		
 		return ar;
 	}
 	

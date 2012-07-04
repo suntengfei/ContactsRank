@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts.Photo;
 import android.text.TextUtils;
+import android.util.Log;
 
 public class Contacts
 {
@@ -77,13 +78,17 @@ public class Contacts
 					input= ContactsContract.Contacts.openContactPhotoInputStream(resolver, uri);				}
 					contactPhoto = BitmapFactory.decodeStream(input); 	
 				}*/
-				cts.add(new Contact(contactId,contactName));
+				cts.add(new Contact(contactId,contactName,phoneNumber));
 /*				mContactsName.add(contactName);
 				mContactsID[i++] = contactId;
 				mContactsNumber.add(phoneNumber); */
 			}
 			phoneCursor.close();
 		}
+		
+		for(int i = 0;i<cts.size();i++)
+			Log.i("2102749",cts.get(i).toString());
+		
 		return cts;
 	}
 	

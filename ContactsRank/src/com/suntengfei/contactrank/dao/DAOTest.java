@@ -49,7 +49,7 @@ public class DAOTest extends AndroidTestCase
 	public void testgetsms()
 	{
 		ArrayList<Contact> ctt = new ArrayList<Contact>();
-		ctt.add(new Contact(1,"Www"));
+		ctt.add(new Contact(1,"Www","1213"));
 		SmsDAO sd = new SmsDAO(this.getContext());
 		Log.i(TAG,String.valueOf(sd.getMDatacount()));
 		Log.i(TAG,String.valueOf(sd.getMData(ctt).get(0).get_count()));
