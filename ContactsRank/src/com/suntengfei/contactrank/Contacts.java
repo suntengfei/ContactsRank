@@ -78,6 +78,8 @@ public class Contacts
 					input= ContactsContract.Contacts.openContactPhotoInputStream(resolver, uri);				}
 					contactPhoto = BitmapFactory.decodeStream(input); 	
 				}*/
+				if(phoneNumber.length()>11)
+					phoneNumber = phoneNumber.substring(phoneNumber.length()-11);
 				cts.add(new Contact(contactId,contactName,phoneNumber));
 /*				mContactsName.add(contactName);
 				mContactsID[i++] = contactId;
@@ -88,6 +90,45 @@ public class Contacts
 		
 		for(int i = 0;i<cts.size();i++)
 			Log.i("2102749",cts.get(i).toString());
+		
+		return cts;
+	}
+	
+	
+	//每个cid只出现一次，不重复用户
+	public ArrayList<Contact> getPhoneContactsS(){
+		cts.clear();
+		ContentResolver resolver = mContext.getContentResolver();
+		//获取联系人
+		Cursor phoneCursor = resolver.query(Phone.CONTENT_URI,PHONES_PROJECTION,null,null,null);
+		if(phoneCursor!=null)
+		{
+			int j;
+			while(phoneCursor.moveToNext())
+			{
+				
+				//得到手机号码
+				String phoneNumber = phoneCursor.getString(PHONES_NUMBER_INDEX);
+				
+				if(TextUtils.isEmpty(phoneNumber))
+					continue;
+				//联系人名称
+				String contactName = phoneCursor.getString(PHONES_DISPLAY_NAME_INDEX);
+				//联系人ID
+				int contactId = phoneCursor.getInt(PHONES_CONTACT_ID_INDEX);
+				//联系人头像ID
+				Long photoId = phoneCursor.getLong(PHONES_PHOTO_ID_INDEX);
+				
+				if(phoneNumber.length()>11)
+					phoneNumber = phoneNumber.substring(phoneNumber.length()-11);
+				for( j = 0;j<cts.size();j++)
+					if(contactId==cts.get(j).get_cid())
+						break;
+				if(j>=cts.size())
+					cts.add(new Contact(contactId,contactName,phoneNumber));
+			}
+			phoneCursor.close();
+		}
 		
 		return cts;
 	}

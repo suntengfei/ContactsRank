@@ -134,6 +134,9 @@ public class Sms_Records
 		if(act==null)
 			act = cts.getPhoneContacts();
 		
+		if(number.length()>11)
+			number = number.substring(number.length()-11);
+		
 		for(int i = 0;i<act.size();i++)
 		{
 			if(number.equals(act.get(i).get_number()))

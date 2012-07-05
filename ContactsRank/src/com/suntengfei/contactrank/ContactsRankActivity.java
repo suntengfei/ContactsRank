@@ -87,11 +87,11 @@ public class ContactsRankActivity extends Activity {
         Log.i("201271","month"+String.valueOf((int)((targetdao.gettime()/100)%100)));
         if((date.getMonth()+1)!=(int)((targetdao.gettime()/100)%100))
         {
-        	aark = makeARank(new Contacts(this).getPhoneContacts());
+        	aark = makeARank(new Contacts(this).getPhoneContactsS());
         	freshRank(aark,1);
         }
         else{
-        	aark = makeMRank(new Contacts(this).getPhoneContacts(),0);
+        	aark = makeMRank(new Contacts(this).getPhoneContactsS(),0);
         	freshRank(aark,0);
         }
         
@@ -203,7 +203,7 @@ public class ContactsRankActivity extends Activity {
 			else
 				point = 0;
 			Log.i("newcall","count:"+String.valueOf(crd.get(i).get_count())+"*2  duration:"+String.valueOf(crd.get(i).get_duration()));
-			Log.i("newcall",String.valueOf(point));
+			Log.i("newcall",crd.get(i).toString());
 			ranks.add(new Rank(crd.get(i).get_cid(),crd.get(i).get_name(),0,point,point,1));
 		}
 		
@@ -214,7 +214,8 @@ public class ContactsRankActivity extends Activity {
 			{
 				if(srd.get(j).get_cid()==ranks.get(k).get_cid())
 				{
-					Log.i("newsms","加分前"+String.valueOf(ranks.get(k).get_mpoint()));
+					if(ranks.get(k).get_name().equals("向向"))
+						Log.i("xiangxiang",ranks.get(k).toString());
 					int point73 = ranks.get(k).get_mpoint()+srd.get(j).get_count();
 					ranks.get(k).set_mpoint(point73);
 					ranks.get(k).set_apoint(point73);
@@ -250,6 +251,11 @@ public class ContactsRankActivity extends Activity {
 		
 		for(int i = 0;i<ar.size();i++)
 		{
+			if(ar.get(i).get_name().equals("向向"))
+			{
+				Log.i("xiangxiang",ar.get(i).toString());
+				Log.i("xiangxiang",mr.get(i).toString());
+			}
 			ar.get(i).set_apoint(ar.get(i).get_apoint()-mr.get(i).get_apoint());
 			ar.get(i).set_mpoint(mr.get(i).get_mpoint());
 			Log.i("201271",ar.get(i).toString());
@@ -273,6 +279,9 @@ public class ContactsRankActivity extends Activity {
 	 */
 	public void freshRank(ArrayList<Rank> aaak,int target)
 	{
+		for(int i = 0;i<aaak.size();i++)
+			Log.i("201275",aaak.get(i).toString());
+		
 		if(target==0)
 			contactdao.updateM(aaak);
 		else

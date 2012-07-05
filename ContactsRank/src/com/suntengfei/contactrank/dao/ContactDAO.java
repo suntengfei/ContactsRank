@@ -57,6 +57,7 @@ public class ContactDAO
 		ContentValues values = new ContentValues();
 		for(int i = 0;i<rk.size();i++)
 		{
+			values.put("name", rk.get(i).get_name());
 			values.put("mpoint", rk.get(i).get_mpoint());
 			db.update("rank", values, "cid=?", new String[]{String.valueOf(rk.get(i).get_cid())});
 			values.clear();
@@ -75,6 +76,7 @@ public class ContactDAO
 		ContentValues values = new ContentValues();
 		for(int i = 0;i<rk.size();i++)
 		{
+			values.put("name", rk.get(i).get_name());
 			values.put("apoint", rk.get(i).get_apoint());
 			values.put("mpoint", rk.get(i).get_mpoint());
 			db.update("rank", values, "cid=?", new String[]{String.valueOf(rk.get(i).get_cid())});
@@ -99,8 +101,8 @@ public class ContactDAO
 	{
 		db = helper.getWritableDatabase();
 		ArrayList<Rank> rk = new ArrayList<Rank>();
-		Cursor cursor = db.query("rank", new String[]{"cid","name","apoint","mpoint"
-				},null, null, null, null, "apoint+mpoint desc");
+		Cursor cursor = db.query("rank", new String[]{"cid","name","SUM(apoint)","SUM(mpoint)"
+				},null, null, "name", null, "SUM(apoint)+SUM(mpoint) desc");
 		while(cursor.moveToNext())
 		{
 			if(cursor.getInt(2)==0&&cursor.getInt(3)==0)
@@ -116,8 +118,8 @@ public class ContactDAO
 	{
 		db = helper.getWritableDatabase();
 		ArrayList<Rank> rk = new ArrayList<Rank>();
-		Cursor cursor = db.query("rank", new String[]{"cid","name","mpoint"
-				},null, null, null, null, "mpoint desc");
+		Cursor cursor = db.query("rank", new String[]{"cid","name","SUM(mpoint)"
+				},null, null, "name", null, "mpoint desc");
 		while(cursor.moveToNext())
 		{
 			if(cursor.getInt(2)==0)
