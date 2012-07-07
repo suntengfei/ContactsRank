@@ -17,20 +17,20 @@ public class Contacts
 {
 	private Context mContext;
 	
-	/**ï¿½ï¿½È¡ï¿½ï¿½Phonï¿½ï¿½ï¿½Ö¶ï¿½**/
+	/**»ñÈ¡¿âPhon±í×Ö¶Î**/
     private static final String[] PHONES_PROJECTION = new String[] {
     	Phone.DISPLAY_NAME, Phone.NUMBER, Photo._ID,Phone.CONTACT_ID };
    
-    /**ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½**/
+    /**ÁªÏµÈËÏÔÊ¾Ãû³Æ**/
     private static final int PHONES_DISPLAY_NAME_INDEX = 0;
     
-    /**ï¿½ç»°ï¿½ï¿½ï¿½ï¿½**/
+    /**µç»°ºÅÂë**/
     private static final int PHONES_NUMBER_INDEX = 1;
     
-    /**Í·ï¿½ï¿½ID**/
+    /**Í·ÏñID**/
     private static final int PHONES_PHOTO_ID_INDEX = 2;
    
-    /**ï¿½ï¿½Ïµï¿½Ëµï¿½ID**/
+    /**ÁªÏµÈËµÄID**/
     private static final int PHONES_CONTACT_ID_INDEX = 3;
     
 /*    private ArrayList<String> mContactsName = new ArrayList<String>();
@@ -49,7 +49,7 @@ public class Contacts
 	public ArrayList<Contact> getPhoneContacts(){
 		cts.clear();
 		ContentResolver resolver = mContext.getContentResolver();
-		//ï¿½ï¿½È¡ï¿½ï¿½Ïµï¿½ï¿½
+		//»ñÈ¡ÁªÏµÈË
 		Cursor phoneCursor = resolver.query(Phone.CONTENT_URI,PHONES_PROJECTION,null,null,null);
 		//mContactsID = new Long[phoneCursor.getCount()+1];
 		if(phoneCursor!=null)
@@ -58,18 +58,18 @@ public class Contacts
 			while(phoneCursor.moveToNext())
 			{
 				
-				//ï¿½Ãµï¿½ï¿½Ö»ï¿½ï¿½ï¿½ï¿½ï¿½
+				//µÃµ½ÊÖ»úºÅÂë
 				String phoneNumber = phoneCursor.getString(PHONES_NUMBER_INDEX);
 				
 				if(TextUtils.isEmpty(phoneNumber))
 					continue;
-				//ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+				//ÁªÏµÈËÃû³Æ
 				String contactName = phoneCursor.getString(PHONES_DISPLAY_NAME_INDEX);
-				//ï¿½ï¿½Ïµï¿½ï¿½ID
+				//ÁªÏµÈËID
 				int contactId = phoneCursor.getInt(PHONES_CONTACT_ID_INDEX);
-				//ï¿½ï¿½Ïµï¿½ï¿½Í·ï¿½ï¿½ID
+				//ÁªÏµÈËÍ·ÏñID
 				Long photoId = phoneCursor.getLong(PHONES_PHOTO_ID_INDEX);
-				//ï¿½ï¿½Ïµï¿½ï¿½Í·ï¿½ï¿½bitMAP
+				//ÁªÏµÈËÍ·ÏñbitMAP
 /*				Bitmap contactPhoto = null;
 				if(photoId>0)
 				{
@@ -87,6 +87,10 @@ public class Contacts
 			}
 			phoneCursor.close();
 		}
+		
+		for(int i = 0;i<cts.size();i++)
+			Log.i("2102749",cts.get(i).toString());
+		
 		return cts;
 	}
 	

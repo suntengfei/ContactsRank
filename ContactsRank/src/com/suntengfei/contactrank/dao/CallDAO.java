@@ -72,6 +72,24 @@ public class CallDAO
 		return calls;
 	}
 	
+	public ArrayList<Call_Record> getADetailData(int cid)
+	{
+		ArrayList<Call_Record> calls = new ArrayList<Call_Record>();
+		db = helper.getWritableDatabase();
+		Cursor cursor = db.query("call", new String[]{"cid","name","sum(duration)"
+				,"sum(count)","time/100"}, "cid=? ", new String[]
+						{String.valueOf(cid)}, "time/100", null, "time/100 desc");
+		while(cursor.moveToNext())
+		{
+			calls.add(new Call_Record(cursor.getInt(0),cursor.getString(1)
+					,cursor.getLong(2),cursor.getInt(3),cursor.getLong(4)));
+		}
+		cursor.close();
+		db.close();
+		return calls;
+	}
+	
+	
 	/**
 	 * 获取所有通讯录用户(ctt)的总通话记录信息
 	 * @param ctt

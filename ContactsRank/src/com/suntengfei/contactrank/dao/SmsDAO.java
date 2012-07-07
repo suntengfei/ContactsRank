@@ -72,6 +72,24 @@ public class SmsDAO
 		return smss;
 	}
 	
+	public ArrayList<Sms_Record> getADetailData(int cid)
+	{
+		ArrayList<Sms_Record> smss = new ArrayList<Sms_Record>();
+		db = helper.getWritableDatabase();
+		Cursor cursor = db.query("sms", new String[]{"cid","name"
+				,"SUM(count)","time/100"}, "cid=? ", new String[]
+						{String.valueOf(cid)}, "time/100", null, "time/100 desc");
+		while(cursor.moveToNext())
+		{
+			smss.add(new Sms_Record(cursor.getInt(0),cursor.getString(1)
+					,cursor.getInt(2),cursor.getLong(3)));
+			Log.i("20127717",String.valueOf(cursor.getLong(3)+"count:"+String.valueOf(cursor.getInt(2))));
+		}
+		cursor.close();
+		db.close();
+		return smss;
+	}
+	
 	public ArrayList<Sms_Record> getAData(ArrayList<Contact> ctt)
 	{
 		ArrayList<Sms_Record> smss = new ArrayList<Sms_Record>();
@@ -92,6 +110,7 @@ public class SmsDAO
 			{
 				smss.add(new Sms_Record(ctt.get(i).get_cid(),ctt.get(i).get_name(),0,0));
 			}
+			cursor.close();
 		}
 		db.close();
 		return smss;

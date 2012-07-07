@@ -2,7 +2,6 @@ package com.suntengfei.contactrank;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Random;
 
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
@@ -25,7 +24,6 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.suntengfei.contactrank.dao.CallDAO;
-import com.suntengfei.contactrank.dao.ContactDAO;
 import com.suntengfei.contactrank.dao.SmsDAO;
 import com.sutnengfei.contactrank.model.Call_Record;
 import com.sutnengfei.contactrank.model.Sms_Record;
@@ -35,12 +33,10 @@ public class SingleDetail extends Activity
 
 	private CallDAO ctd=new CallDAO(this);;
 	private SmsDAO ssd = new SmsDAO(this);;
-	private ContactDAO cttd = new ContactDAO(this);;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
-		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.single);
 
@@ -109,50 +105,113 @@ public class SingleDetail extends Activity
 		// 2.1, 创建柱状图数据
 		
 		int time = ((date.getYear()+1900)*10000+(date.getMonth()+1)*100);
-		ArrayList<Call_Record> acrds = ctd.getData(cid, time);
-		ArrayList<Sms_Record> asrds = ssd.getData(cid, time);
 		
+		ArrayList<Call_Record> acrds; 
+		ArrayList<Sms_Record> asrds; 
+		if(target==0)
+		{
+			asrds= ssd.getData(cid, time);
+			acrds= ctd.getData(cid, time);
+		}
+		else
+		{
+			asrds = ssd.getADetailData(cid);
+			acrds = ctd.getADetailData(cid);
+		}
 		CategorySeries series1 = new CategorySeries("通话数");
 		CategorySeries series2 = new CategorySeries("短信数");
 		
 		
 		//填充数据  并 找出最大count
-		int j=0,k=0,mcount=0;
-		for(int i = 1;i<=date.getDate();i++)
+		int j=0,k=0,mcount=0,yearmonth=0;
+		if(target==0)
 		{
-			if(j<acrds.size())	
+			for(int i = 1;i<=date.getDate();i++)
 			{
-				if((int)(acrds.get(j).get_time())%100==i)
+				if(j<acrds.size())	
 				{
-					series1.add(acrds.get(j).get_count());
-					if(acrds.get(j).get_count()>mcount)
-						mcount = acrds.get(j).get_count();
-					j++;
+					if((int)(acrds.get(j).get_time())%100==i)
+					{
+						series1.add(acrds.get(j).get_count());
+						if(acrds.get(j).get_count()>mcount)
+							mcount = acrds.get(j).get_count();
+						j++;
+					}
+					else
+						series1.add(0);
 				}
 				else
 					series1.add(0);
-			}
-			else
-				series1.add(0);
-			if(k<asrds.size())
-			{	
-				if((int)(asrds.get(k).get_time())%100==i)
-				{
-					series2.add(asrds.get(k).get_count());
-					if(asrds.get(k).get_count()>mcount)
-						mcount = asrds.get(k).get_count();
-					k++;
+				if(k<asrds.size())
+				{	
+					if((int)(asrds.get(k).get_time())%100==i)
+					{
+						series2.add(asrds.get(k).get_count());
+						if(asrds.get(k).get_count()>mcount)
+							mcount = asrds.get(k).get_count();
+						k++;
+					}
+					else
+						series2.add(0);
 				}
 				else
 					series2.add(0);
 			}
-			else
-				series2.add(0);
 		}
+		else
+		{
+			if(asrds.size()>0)
+				yearmonth = (int)asrds.get(asrds.size()-1).get_time();
+			if(acrds.size()>0)
+			{
+				if(yearmonth!=0)
+				yearmonth = yearmonth<(int)acrds.get(acrds.size()-1).get_time()?
+						yearmonth:(int)acrds.get(acrds.size()-1).get_time();
+				else
+					yearmonth = (int)acrds.get(acrds.size()-1).get_time();
+			}
+					 
+			for(int i=time/100%100,y = time/10000;y*100+i>=yearmonth;i--)
+			{
+				if(i==0)
+				{
+					i = 12;
+					y--;
+				}
+				if(j<acrds.size())	
+				{
+					if((int)(acrds.get(j).get_time())==i+y*100)
+					{
+						series1.add(acrds.get(j).get_count());
+						if(acrds.get(j).get_count()>mcount)
+							mcount = acrds.get(j).get_count();
+						j++;
+					}
+					else
+						series1.add(0);
+				}
+				else
+					series1.add(0);
+				if(k<asrds.size())
+				{	
+					if((int)(asrds.get(k).get_time())==i+y*100)
+					{
+						series2.add(asrds.get(k).get_count());
+						if(asrds.get(k).get_count()>mcount)
+							mcount = asrds.get(k).get_count();
+						k++;
+					}
+					else
+						series2.add(0);
+				}
+				else
+					series2.add(0);
+			}
+		}
+		
 		dataset.addSeries(series1.toXYSeries());
 		dataset.addSeries(series2.toXYSeries());
 		
-		Random r = new Random();
 		/*for (int i = 0; i < 2; i++) {
 			// 注意,这里与昨天的XYSeries 有一点不同!!这里使用CategroySeries
 			CategorySeries series = new CategorySeries("test" + (i + 1));
@@ -181,8 +240,7 @@ public class SingleDetail extends Activity
 		// 注意这里x,y min 不要相同
 		// 这里用一种内置的设置x,y范围的方法
 		//顺序是:minX, maxX, minY, maxY
-		if(mcount%10!=0)
-			mcount = mcount/10*10+10;
+			mcount = mcount/10*10+(mcount/10>10?mcount/10:10);
 		double[] range = { 0, 10, 0, mcount };
 		renderer.setRange(range);
 		// 等价于:
@@ -208,12 +266,38 @@ public class SingleDetail extends Activity
 		renderer.setShowGrid(true);
 		// 设置x,y轴上的刻度的颜色
 		renderer.setLabelsColor(Color.BLACK);
+		//允许左右拖动
 		renderer.setPanEnabled(true, false);
+		if(target==0)
+			renderer.setChartTitle("月统计柱状图");
+		else
+			renderer.setChartTitle("总统计柱状图");
 		// 设置页边空白的颜色
 		renderer.setMarginsColor(Color.DKGRAY);
 		// 设置是否显示,坐标轴的轴,默认为 true
 		renderer.setShowAxes(true);
-
+		
+		
+		renderer.setXLabelsAngle(-25);
+		renderer.setXLabels(0);
+		if(target==0)
+		{
+			for(int i =1;i<=date.getDate();i++)
+				renderer.addXTextLabel(i, String.valueOf(i)+"号");
+		}
+		else
+		{
+			for(int i=time/100%100,q=1,y = time/10000;y*100+i>=yearmonth;i--,q++)
+			{
+				if(i==0)
+				{
+					i = 12;
+					y--;
+				}
+				renderer.addXTextLabel(q, String.valueOf(y)+"年"+String.valueOf(i%100)+"月");
+			}
+		}
+		
 		// 设置条形图之间的距离
 		renderer.setBarSpacing(0.1);
 		int length = renderer.getSeriesRendererCount();
@@ -238,6 +322,8 @@ public class SingleDetail extends Activity
 		barchart.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT,
 				LayoutParams.FILL_PARENT));
 	}
+	
+	
 }
 
 

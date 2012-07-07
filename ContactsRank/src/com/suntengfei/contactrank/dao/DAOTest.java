@@ -64,4 +64,22 @@ public class DAOTest extends AndroidTestCase
 		if(rank!=null)
 			Log.i(TAG,rank.get(0).toString());
 	}
+	
+	public void testcallgetadetaildata()
+	{
+		ArrayList<Call_Record>  call;
+		CallDAO cd = new CallDAO(this.getContext());
+		call = cd.getADetailData(1);
+		for(int i =0;i<call.size();i++)
+			Log.i("201277",call.get(i).toString());
+	}
+	
+	public void testsmsgetadetaildata()
+	{
+		ArrayList<Sms_Record>  sms;
+		SmsDAO cd = new SmsDAO(this.getContext());
+		sms = cd.getADetailData(1);
+		for(int i =0;i<sms.size();i++)
+			Log.i("201277",sms.get(i).toString());
+	}
 }
