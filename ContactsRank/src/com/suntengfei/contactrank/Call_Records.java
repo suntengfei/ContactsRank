@@ -53,7 +53,7 @@ public class Call_Records
 		ContentResolver cr = mContext.getContentResolver();	
 		Cursor cursor = cr.query(CallLog.Calls.CONTENT_URI, new String[]{
 				CallLog.Calls.NUMBER,CallLog.Calls.CACHED_NAME,CallLog.Calls.DURATION
-				, CallLog.Calls.DATE}, CallLog.Calls.DATE+">?"
+				, CallLog.Calls.DATE,CallLog.Calls.TYPE}, CallLog.Calls.DATE+">?"
 				,new String[]{String.valueOf(etime)},CallLog.Calls.DATE);
 		
 		if(cursor==null)
@@ -65,7 +65,7 @@ public class Call_Records
 			 cursor.moveToPosition(i);
 			 if(!TextUtils.isEmpty(cursor.getString(1)))
 			 	Log.i("aaaaaa", cursor.getString(1)+"1");
-			 if(TextUtils.isEmpty(cursor.getString(1))||cursor.getLong(2)==0)
+			 if(TextUtils.isEmpty(cursor.getString(1))||cursor.getLong(2)<=0||(cursor.getInt(4)!=1&&cursor.getInt(4)!=2))
 				 continue;
 			 Log.i("aaaaaa",cursor.getString(3));
 			 date = new Date(Long.parseLong(cursor.getString(3)));  

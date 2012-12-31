@@ -78,6 +78,7 @@ public class Contacts
 					input= ContactsContract.Contacts.openContactPhotoInputStream(resolver, uri);				}
 					contactPhoto = BitmapFactory.decodeStream(input); 	
 				}*/
+				//phoneNumber.replace(" ", "");//for MIUI4.0
 				if(phoneNumber.length()>11)
 					phoneNumber = phoneNumber.substring(phoneNumber.length()-11);
 				cts.add(new Contact(contactId,contactName,phoneNumber));
@@ -119,6 +120,7 @@ public class Contacts
 				//联系人头像ID
 				Long photoId = phoneCursor.getLong(PHONES_PHOTO_ID_INDEX);
 				
+				//phoneNumber.replace(" ", "");//for MIUI4.0
 				if(phoneNumber.length()>11)
 					phoneNumber = phoneNumber.substring(phoneNumber.length()-11);
 				for( j = 0;j<cts.size();j++)

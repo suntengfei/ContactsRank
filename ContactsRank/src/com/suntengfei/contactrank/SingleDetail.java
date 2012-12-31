@@ -68,15 +68,18 @@ public class SingleDetail extends Activity
 		TextView textView19 = (TextView)findViewById(R.id.textView19);//call duration
 		RatingBar ratingbar1 = (RatingBar)findViewById(R.id.ratingBar1);//ratingbar
 		
+		LinearLayout llt = (LinearLayout)findViewById(R.id.linearLayoutSL);
 		if(target==0)
 		{
 			textViewT.setText("月统计记录");		
 			textViewR.setTag("月得分：");
+			llt.setBackgroundColor(0xFF555500);
 		}
 		else
 		{
 			textViewT.setText("总统计记录");		
 			textViewR.setText("总得分：");
+			llt.setBackgroundColor(0xFF333300);
 		}
 		textView2.setText(name);
 		textView4.setText(String.valueOf(point));
@@ -92,9 +95,9 @@ public class SingleDetail extends Activity
 		sd+=String.valueOf(duration%60)+"s";
 		textView19.setText(sd);
 		Date date = new Date();
-		float rating = point/(float)(date.getDate()*3.0);
+		float rating = point/(float)(date.getDate()*2);
 		if(target==1)
-			rating = point/(float)50.0;
+			rating = point/(float)100.0;
 		if(rating>0&&rating<0.5)
 			rating = (float)0.5;
 		ratingbar1.setRating(rating);	

@@ -13,22 +13,25 @@ import com.sutnengfei.contactrank.model.Rank;
 import com.sutnengfei.contactrank.model.Sms_Record;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemLongClickListener;
 
 public class ContactsRankActivity extends Activity {
     /** Called when the activity is first created. */
     ListView mListView = null;
-    TextView tv;
+    //TextView tv;
     private CallDAO calldao;
     private SmsDAO smsdao;
     private ContactDAO contactdao;
@@ -48,78 +51,18 @@ public class ContactsRankActivity extends Activity {
     private ViewFlow viewFlow;
 	private ListView listView;
 	private ListView listView2;
-   
+     
+	private MyAsyncTask myactask;
+	
+	private boolean isload = false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.main);
         
-        calldao = new CallDAO(this);
-        smsdao = new SmsDAO(this);
-        contactdao = new ContactDAO(this);
-        targetdao = new TargetDAO(this);
-        
-        crd = new Call_Records(this);
-        srd = new Sms_Records(this);
-        cts = new Contacts(this);
-        
-        acrd =crd.refresh_Call_Records();
-        asrd = srd.refresh_Sms_Records();
-        tv = (TextView) findViewById(R.id.textView1);
-        cts.getPhoneContacts();
-       /* tv.setText(String.valueOf(cts.getPhoneContacts().size())+"    "+String.valueOf(acrd.size())
-        		+"      "+String.valueOf(asrd.size()));*/
-        
-        cuContacts();
-        
-        addAllMsg(acrd,asrd);
-        
-        
-        for(int i = 0;i<acrd.size();i++)
-        	Log.i("newcall",acrd.get(i).toString());
-        
-        for(int i = 0;i<asrd.size();i++)
-        	Log.i("newsms",asrd.get(i).toString());
-        
-        Date date = new Date();
-        
-        Log.i("201271","month"+String.valueOf(date.getMonth()+1));
-        Log.i("201271","month"+String.valueOf((int)((targetdao.gettime()/100)%100)));
-        if((date.getMonth()+1)!=(int)((targetdao.gettime()/100)%100))
-        {
-        	aark = makeARank(new Contacts(this).getPhoneContactsS());
-        	freshRank(aark,1);
-        }
-        else{
-        	aark = makeMRank(new Contacts(this).getPhoneContactsS(),0);
-        	freshRank(aark,0);
-        }
-        
-        for(int i = 0;i<aark.size();i++)
-        	Log.i("newtest",aark.get(i).toString());
-        
-        
-		viewFlow = (ViewFlow) findViewById(R.id.viewflow);
-        DiffAdapter adapter = new DiffAdapter(this);
-        viewFlow.setAdapter(adapter);
-		TitleFlowIndicator indicator = (TitleFlowIndicator) findViewById(R.id.viewflowindic);
-		indicator.setTitleProvider(adapter);
-		viewFlow.setFlowIndicator(indicator);
-		
-		//** To populate ListView in diff_view1.xml *//*
-		listView = (ListView) findViewById(R.id.listView1);
-		monthrank = contactdao.getMRank();
-        listView.setAdapter(new ArrayAdapter<Rank>(this,
-				android.R.layout.simple_list_item_1, monthrank));
-        listView.setOnItemClickListener(itemlistener1);
-        
-        listView2 = (ListView) findViewById(R.id.listView2);
-        allrank = contactdao.getARank();
-        listView2.setAdapter(new ArrayAdapter<Rank>(this,
-				android.R.layout.simple_list_item_1, allrank));
-        listView2.setOnItemClickListener(itemlistener2);
-        
-		targetdao.update(makeDate(date), date.getTime(), 1);
+        myactask = new MyAsyncTask(this);
+        myactask.execute(100);
+
+
     }
 	
     /**
@@ -192,8 +135,8 @@ public class ContactsRankActivity extends Activity {
 			crd = calldao.getAData(ctt);
 		}
 		
-		Log.i("calltest",String.valueOf(crd.size()));
-		Log.i("smstest",String.valueOf(srd.size()));
+//		Log.i("calltest",String.valueOf(crd.size()));
+//		Log.i("smstest",String.valueOf(srd.size()));
 		
 		Log.i("newsms","一个月的短信数："+String.valueOf(srd.size()));
 		for(int i = 0;i<crd.size();i++)
@@ -202,8 +145,8 @@ public class ContactsRankActivity extends Activity {
 				point = (int) (crd.get(i).get_count()*2+(crd.get(i).get_duration()/60)+1);
 			else
 				point = 0;
-			Log.i("newcall","count:"+String.valueOf(crd.get(i).get_count())+"*2  duration:"+String.valueOf(crd.get(i).get_duration()));
-			Log.i("newcall",crd.get(i).toString());
+//			Log.i("newcall","count:"+String.valueOf(crd.get(i).get_count())+"*2  duration:"+String.valueOf(crd.get(i).get_duration()));
+//			Log.i("newcall",crd.get(i).toString());
 			ranks.add(new Rank(crd.get(i).get_cid(),crd.get(i).get_name(),0,point,point,1));
 		}
 		
@@ -214,14 +157,12 @@ public class ContactsRankActivity extends Activity {
 			{
 				if(srd.get(j).get_cid()==ranks.get(k).get_cid())
 				{
-					if(ranks.get(k).get_name().equals("向向"))
-						Log.i("xiangxiang",ranks.get(k).toString());
 					int point73 = ranks.get(k).get_mpoint()+srd.get(j).get_count();
 					ranks.get(k).set_mpoint(point73);
 					ranks.get(k).set_apoint(point73);
-					Log.i("newsms","加分"+String.valueOf(srd.get(j).get_count()));
-					Log.i("newsms","sms 评分:"+String.valueOf(ranks.get(k).get_mpoint()));
-					Log.i("201273",ranks.get(k).toString());
+//					Log.i("newsms","加分"+String.valueOf(srd.get(j).get_count()));
+//					Log.i("newsms","sms 评分:"+String.valueOf(ranks.get(k).get_mpoint()));
+//					Log.i("201273",ranks.get(k).toString());
 					break;
 				}
 			}
@@ -242,23 +183,18 @@ public class ContactsRankActivity extends Activity {
 		ar = makeMRank(ctt,1);
 		if(mr.size()!=ar.size())
 		{
-			Log.i("201271","很不幸。。。");
-			Log.i("201271","ar"+String.valueOf(ar.size()));
-			Log.i("201271","mr"+String.valueOf(mr.size()));
-			
+//			Log.i("201271","很不幸。。。");
+//			Log.i("201271","ar"+String.valueOf(ar.size()));
+//			Log.i("201271","mr"+String.valueOf(mr.size()));
+//			
 			return new ArrayList<Rank>();
 		}
 		
 		for(int i = 0;i<ar.size();i++)
 		{
-			if(ar.get(i).get_name().equals("向向"))
-			{
-				Log.i("xiangxiang",ar.get(i).toString());
-				Log.i("xiangxiang",mr.get(i).toString());
-			}
 			ar.get(i).set_apoint(ar.get(i).get_apoint()-mr.get(i).get_apoint());
 			ar.get(i).set_mpoint(mr.get(i).get_mpoint());
-			Log.i("201271",ar.get(i).toString());
+//			Log.i("201271",ar.get(i).toString());
 		}
 		for(int i = 0;i<ar.size();i++)
 		{
@@ -279,8 +215,8 @@ public class ContactsRankActivity extends Activity {
 	 */
 	public void freshRank(ArrayList<Rank> aaak,int target)
 	{
-		for(int i = 0;i<aaak.size();i++)
-			Log.i("201275",aaak.get(i).toString());
+//		for(int i = 0;i<aaak.size();i++)
+//			Log.i("201275",aaak.get(i).toString());
 		
 		if(target==0)
 			contactdao.updateM(aaak);
@@ -295,7 +231,7 @@ public class ContactsRankActivity extends Activity {
 		return (long)((date.getYear()+1900)*10000+(date.getMonth()+1)*100+date.getDate());
 	}
     
-    private OnItemClickListener itemlistener1 = new OnItemClickListener(){
+/*    private OnItemClickListener itemlistener1 = new OnItemClickListener(){
 
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
@@ -306,8 +242,8 @@ public class ContactsRankActivity extends Activity {
 			int mpt = monthrank.get(position).get_mpoint();
 			String name = monthrank.get(position).get_name();
 			
-			Log.i("201271",String.valueOf(iid));
-			Log.i("201271",String.valueOf(mpt));
+//			Log.i("201271",String.valueOf(iid));
+//			Log.i("201271",String.valueOf(mpt));
 			
 			Intent i = new Intent(ContactsRankActivity.this,SingleDetail.class);
 			i.putExtra("cid", iid);
@@ -330,8 +266,8 @@ public class ContactsRankActivity extends Activity {
 			int apt = allrank.get(position).get_apoint();
 			String name = allrank.get(position).get_name();
 			
-			Log.i("201271",String.valueOf(iid));
-			Log.i("201271",String.valueOf(apt));
+	//		Log.i("201271",String.valueOf(iid));
+	//		Log.i("201271",String.valueOf(apt));
 			
 			Intent i = new Intent(ContactsRankActivity.this,SingleDetail.class);
 			i.putExtra("cid", iid);
@@ -340,5 +276,43 @@ public class ContactsRankActivity extends Activity {
 			i.putExtra("name", name);
 			startActivity(i);
 		}
-	};
+	};*/
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if(isload)
+			{
+			AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+			dialog.setIcon(android.R.drawable.ic_dialog_info);
+			dialog.setTitle("提示");
+			dialog.setMessage("你确定要退出？");
+			dialog.setPositiveButton("确定",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							finish();
+						}
+					});
+			dialog.setNegativeButton("取消",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+
+						}
+					});
+			dialog.show();
+			return true;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	public void setIsload(boolean t)
+	{
+		this.isload = t;
+	}
+	
 }

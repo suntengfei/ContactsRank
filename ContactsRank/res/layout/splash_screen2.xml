@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:background="@drawable/screen2" >
+
+    <LinearLayout
+        android:id="@+id/linearLayout111"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingLeft="20sp"
+        android:paddingRight="20sp"
+        android:gravity="center" >
+	        <TextView
+	        android:id="@+id/textView222"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="正在统计从"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+
+		   <TextView
+		       android:id="@+id/textViewSS"
+		       android:layout_width="wrap_content"
+		       android:layout_height="wrap_content"
+		       android:text="很久很久之前"
+		       android:textAppearance="?android:attr/textAppearanceMedium" />
+			<TextView
+		       android:id="@+id/textView1111"
+		       android:layout_width="wrap_content"
+		       android:layout_height="wrap_content"
+		       android:text="至今的通信记录，请耐心等待"
+		       android:textAppearance="?android:attr/textAppearanceMedium" />
+		   <ProgressBar
+		       android:id="@+id/progressBar1"
+		       android:layout_width="wrap_content"
+		       android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</LinearLayout>
